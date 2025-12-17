@@ -8,13 +8,13 @@ import java.util.Map;
 @ConfigurationProperties("")
 public class CalculatorConfiguration {
 
-    public Map<String, Integer> pricing;
+    public final Map<String, Integer> pricing;
 
     public Map<String, Integer> getPricing() {
         return pricing;
     }
 
-    public void setPricing(Map<String, Integer> pricing) {
+    public CalculatorConfiguration(Map<String, Integer> pricing) {
         this.pricing = pricing;
     }
 
