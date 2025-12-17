@@ -10,7 +10,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-@Component
 public class InMemoryRentalHistory {
 
     private final List<MovieRentalEvent> events = Collections.synchronizedList(new ArrayList<>());

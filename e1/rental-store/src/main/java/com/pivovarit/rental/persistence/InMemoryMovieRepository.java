@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-@Component
 public class InMemoryMovieRepository {
 
     private final Map<MovieId, Movie> movies = new ConcurrentHashMap<>();

@@ -6,7 +6,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 
-@Component
 public class InMemoryMovieDescriptionsRepository {
     public Optional<MovieDescription> findByMovieId(MovieId movieId) {
         return Optional.of(new MovieDescription("foo"));
