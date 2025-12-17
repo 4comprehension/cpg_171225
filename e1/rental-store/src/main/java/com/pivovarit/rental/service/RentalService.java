@@ -10,11 +10,13 @@ import com.pivovarit.rental.persistence.InMemoryMovieRepository;
 import com.pivovarit.rental.util.MovieConverters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Optional;
 import java.util.function.Function;
 
+@Component
 public class RentalService {
 
     private static final Logger log = LoggerFactory.getLogger(RentalService.class);

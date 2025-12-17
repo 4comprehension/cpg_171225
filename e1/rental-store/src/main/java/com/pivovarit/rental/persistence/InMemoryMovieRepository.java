@@ -3,12 +3,14 @@ package com.pivovarit.rental.persistence;
 import com.pivovarit.rental.model.Movie;
 import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.model.MovieType;
+import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
+@Component
 public class InMemoryMovieRepository {
 
     private final Map<MovieId, Movie> movies = new ConcurrentHashMap<>();

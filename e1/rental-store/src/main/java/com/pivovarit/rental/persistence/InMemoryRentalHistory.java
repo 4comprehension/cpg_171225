@@ -3,12 +3,14 @@ package com.pivovarit.rental.persistence;
 import com.pivovarit.rental.event.MovieRentalEvent;
 import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.model.MovieRentalEventType;
+import org.springframework.stereotype.Component;
 
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@Component
 public class InMemoryRentalHistory {
 
     private final List<MovieRentalEvent> events = Collections.synchronizedList(new ArrayList<>());
