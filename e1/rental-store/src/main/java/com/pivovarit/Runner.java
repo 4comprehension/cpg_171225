@@ -1,7 +1,7 @@
 package com.pivovarit;
 
+import com.pivovarit.rental.MoviePriceCalculator;
 import com.pivovarit.rental.model.Movie;
-import com.pivovarit.rental.model.MovieAddRequest;
 import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.model.MovieType;
 import com.pivovarit.rental.service.RentalService;
@@ -15,7 +15,7 @@ import org.springframework.stereotype.Component;
  * NEW -> 10
  * REGULAR -> 5
  * OLD -> 3
- *
+ * <p>
  * cennik dev:
  * NEW -> 198237
  * REGULAR -> 123
@@ -25,10 +25,11 @@ import org.springframework.stereotype.Component;
 class Runner implements ApplicationRunner {
 
     private final RentalService rentalService;
-//    private final MoviePriceCalculator calculator;
+    private final MoviePriceCalculator calculator;
 
-    Runner(RentalService rentalService) {
+    Runner(RentalService rentalService, MoviePriceCalculator calculator) {
         this.rentalService = rentalService;
+        this.calculator = calculator;
     }
 
     @Override
@@ -37,6 +38,8 @@ class Runner implements ApplicationRunner {
         Movie m2 = new Movie(new MovieId(1), "Tenet", MovieType.REGULAR);
         Movie m3 = new Movie(new MovieId(2), "Casablanca", MovieType.OLD);
 
-//        calculator...
+        System.out.println("calculator.calculatePrice(m1) = " + calculator.calculatePrice(m1));
+        System.out.println("calculator.calculatePrice(m2) = " + calculator.calculatePrice(m2));
+        System.out.println("calculator.calculatePrice(m3) = " + calculator.calculatePrice(m3));
     }
 }
