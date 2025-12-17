@@ -10,6 +10,8 @@
 
     <modules>
         <module>rental-store</module>
+        <module>demo</module>
+        <module>e1/rental-store</module>
     </modules>
 
     <properties>
