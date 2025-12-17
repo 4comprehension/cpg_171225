@@ -1,6 +1,7 @@
 package com.pivovarit;
 
 import com.pivovarit.rental.MoviePriceCalculator;
+import com.pivovarit.rental.config.CalculatorConfiguration;
 import com.pivovarit.rental.model.Movie;
 import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.model.MovieType;
@@ -26,10 +27,15 @@ class Runner implements ApplicationRunner {
 
     private final RentalService rentalService;
     private final MoviePriceCalculator calculator;
+    private final CalculatorConfiguration calculatorConfiguration;
 
-    Runner(RentalService rentalService, MoviePriceCalculator calculator) {
+    Runner(
+      RentalService rentalService,
+      MoviePriceCalculator calculator,
+      CalculatorConfiguration calculatorConfiguration) {
         this.rentalService = rentalService;
         this.calculator = calculator;
+        this.calculatorConfiguration = calculatorConfiguration;
     }
 
     @Override
@@ -41,5 +47,8 @@ class Runner implements ApplicationRunner {
         System.out.println("calculator.calculatePrice(m1) = " + calculator.calculatePrice(m1));
         System.out.println("calculator.calculatePrice(m2) = " + calculator.calculatePrice(m2));
         System.out.println("calculator.calculatePrice(m3) = " + calculator.calculatePrice(m3));
+
+        System.out.println("calculatorConfiguration.pricing = " + calculatorConfiguration.pricing);
+        System.out.println("calculatorConfiguration.getPricing() = " + calculatorConfiguration.getPricing());
     }
 }

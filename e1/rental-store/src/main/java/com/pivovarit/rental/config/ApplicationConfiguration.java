@@ -6,7 +6,6 @@ import com.pivovarit.rental.persistence.InMemoryMovieRepository;
 import com.pivovarit.rental.persistence.InMemoryRentalHistory;
 import com.pivovarit.rental.service.MovieRentalService;
 import com.pivovarit.rental.service.RentalService;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -14,12 +13,8 @@ import org.springframework.context.annotation.Configuration;
 class ApplicationConfiguration {
 
     @Bean
-    public MoviePriceCalculator moviePriceCalculator(
-      @Value("${pricing.new}") int newPrice,
-      @Value("${pricing.old}") int oldPrice,
-      @Value("${pricing.regular}") int regularPrice
-    ) {
-        return new MoviePriceCalculator(newPrice, oldPrice, regularPrice);
+    public MoviePriceCalculator moviePriceCalculator(CalculatorConfiguration calculatorConfiguration) {
+        return new MoviePriceCalculator(calculatorConfiguration.getPricing());
     }
 
     @Bean
