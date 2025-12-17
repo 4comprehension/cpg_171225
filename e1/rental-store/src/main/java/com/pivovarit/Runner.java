@@ -1,5 +1,6 @@
 package com.pivovarit;
 
+import com.pivovarit.greeting.GreetingRepository;
 import com.pivovarit.rental.MoviePriceCalculator;
 import com.pivovarit.rental.config.CalculatorConfiguration;
 import com.pivovarit.rental.model.Movie;
@@ -28,14 +29,17 @@ class Runner implements ApplicationRunner {
     private final RentalService rentalService;
     private final MoviePriceCalculator calculator;
     private final CalculatorConfiguration calculatorConfiguration;
+    private final GreetingRepository greetingRepository;
 
     Runner(
       RentalService rentalService,
       MoviePriceCalculator calculator,
-      CalculatorConfiguration calculatorConfiguration) {
+      CalculatorConfiguration calculatorConfiguration,
+      GreetingRepository greetingRepository) {
         this.rentalService = rentalService;
         this.calculator = calculator;
         this.calculatorConfiguration = calculatorConfiguration;
+        this.greetingRepository = greetingRepository;
     }
 
     @Override
@@ -50,5 +54,7 @@ class Runner implements ApplicationRunner {
 
         System.out.println("calculatorConfiguration.pricing = " + calculatorConfiguration.pricing);
         System.out.println("calculatorConfiguration.getPricing() = " + calculatorConfiguration.getPricing());
+
+        System.out.println("greetingRepository.getGreeting() = " + greetingRepository.getGreeting());
     }
 }
