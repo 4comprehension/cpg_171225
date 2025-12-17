@@ -2,6 +2,7 @@ package com.example.demo;
 
 import com.example.demo.bar.BarService;
 import com.example.demo.foo.FooService;
+import com.example.demo.hello.HelloWorldService;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -20,10 +21,12 @@ public class DemoApplication {
 
         private final FooService fooService;
         private final BarService barService;
+        private final HelloWorldService helloWorldService;
 
-        DemoRunner(FooService fooService, BarService barService) {
+        DemoRunner(FooService fooService, BarService barService, HelloWorldService helloWorldService) {
             this.fooService = fooService;
             this.barService = barService;
+            this.helloWorldService = helloWorldService;
         }
 
         @Override
@@ -33,7 +36,7 @@ public class DemoApplication {
             fooService.hello();
             barService.hello();
 
-
+            helloWorldService.hello();
         }
     }
 }

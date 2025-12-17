@@ -8,7 +8,7 @@
         <version>3.3.0</version>
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
-    <groupId>com.forc.rental</groupId>
+    <groupId>com.demo.rental</groupId>
     <artifactId>rental-store</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>rental-store</name>
