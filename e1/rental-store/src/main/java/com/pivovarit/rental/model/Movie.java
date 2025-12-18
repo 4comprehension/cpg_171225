@@ -49,4 +49,14 @@ public final class Movie implements RentalAggregate {
     Optional<String> getRenter() {
         return Optional.ofNullable(renter);
     }
+
+    @Override
+    public String toString() {
+        return "Movie{" +
+               "id=" + id +
+               ", title='" + title + '\'' +
+               ", type=" + type +
+               ", renter='" + renter + '\'' +
+               '}';
+    }
 }

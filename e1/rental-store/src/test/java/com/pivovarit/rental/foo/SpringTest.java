@@ -5,11 +5,13 @@ import com.pivovarit.rental.model.MovieAddRequest;
 import com.pivovarit.rental.model.MovieDto;
 import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.service.RentalService;
+import org.junit.jupiter.api.RepeatedTest;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -21,7 +23,8 @@ class SpringTest {
     @Autowired
     public RentalService rentalService;
 
-    @Test
+//    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @RepeatedTest(100)
     void shouldAddMovie() throws Exception {
         MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
 
@@ -36,7 +39,7 @@ class SpringTest {
 
         @Bean
         GreetingRepository greetingRepository() {
-            return () -> "adsadasda";
+            return () -> "test";
         }
     }
 }

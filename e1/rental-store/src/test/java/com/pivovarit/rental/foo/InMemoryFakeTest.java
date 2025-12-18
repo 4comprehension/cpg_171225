@@ -10,7 +10,6 @@ import com.pivovarit.rental.service.MovieRentalService;
 import com.pivovarit.rental.service.RentalService;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.RepeatedTest;
-import org.junit.jupiter.api.Test;
 
 class InMemoryFakeTest {
 
