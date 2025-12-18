@@ -39,7 +39,7 @@
         </dependency>
 
         <dependency>
-            <groupId> io.rest-assured</groupId>
+            <groupId>io.rest-assured</groupId>
             <artifactId>rest-assured</artifactId>
         </dependency>
 
@@ -83,8 +83,24 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.1.2</version>
+                <configuration>
+                    <excludes>
+                        <exclude>com/pivovarit/blackbox/**/*.java</exclude>
+                    </excludes>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-failsafe-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <includes>
+                        <include>com/pivovarit/blackbox/*Test.java</include>
+                    </includes>
+                </configuration>
                 <executions>
                     <execution>
                         <id>integration-tests</id>
@@ -112,7 +128,7 @@
                 <configuration>
                     <images>
                         <image>
-                            <name>rental-store:snapshot</name> <!-- your image name -->
+                            <name>rental-store:snapshot</name>
                             <build>
                                 <dockerFile>${project.basedir}/Dockerfile</dockerFile>
                             </build>
