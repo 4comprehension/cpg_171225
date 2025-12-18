@@ -12,14 +12,14 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class MovieCatalogueFacade {
+class MovieRentalService {
 
-    private static final Logger log = LoggerFactory.getLogger(MovieCatalogueFacade.class);
+    private static final Logger log = LoggerFactory.getLogger(MovieRentalService.class);
 
-    private final InMemoryRentalHistory rentalHistoryRepository;
-    private final InMemoryMovieRepository movieRepository;
+    private final RentalHistory rentalHistoryRepository;
+    private final MovieRepository movieRepository;
 
-    public MovieCatalogueFacade(InMemoryRentalHistory rentalHistoryRepository, InMemoryMovieRepository movieRepository) {
+    public MovieRentalService(RentalHistory rentalHistoryRepository, InMemoryMovieRepository movieRepository) {
         this.rentalHistoryRepository = rentalHistoryRepository;
         this.movieRepository = movieRepository;
     }

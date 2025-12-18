@@ -8,7 +8,7 @@ import org.junit.jupiter.api.RepeatedTest;
 
 class InMemoryFakeTest {
 
-    @RepeatedTest(1_000)
+    @RepeatedTest(100_000)
     void shouldAddMovie() {
         var rentalService = inMemoryInstance();
         MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
@@ -21,6 +21,6 @@ class InMemoryFakeTest {
 
     private static RentalFacade inMemoryInstance() {
         InMemoryMovieRepository movieRepository = new InMemoryMovieRepository();
-        return new RentalFacade(movieRepository, new InMemoryMovieDescriptionsRepository(), new MovieCatalogueFacade(new InMemoryRentalHistory(), movieRepository));
+        return new RentalFacade(movieRepository, new InMemoryMovieDescriptionsRepository(), new MovieRentalService(new InMemoryRentalHistory(), movieRepository));
     }
 }

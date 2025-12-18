@@ -14,22 +14,22 @@ public class RentalFacade {
 
     private static final Logger log = LoggerFactory.getLogger(RentalFacade.class);
 
-    private final InMemoryMovieRepository movieRepository;
-    private final InMemoryMovieDescriptionsRepository movieDescriptionsRepository;
-    private final MovieCatalogueFacade movieCatalogueFacade;
+    private final MovieRepository movieRepository;
+    private final MovieDescriptionsRepository movieDescriptionsRepository;
+    private final MovieRentalService movieRentalService;
 
-    public RentalFacade(InMemoryMovieRepository movieRepository, InMemoryMovieDescriptionsRepository movieDescriptionsRepository, MovieCatalogueFacade movieCatalogueFacade) {
+    public RentalFacade(MovieRepository movieRepository, InMemoryMovieDescriptionsRepository movieDescriptionsRepository, MovieRentalService movieRentalService) {
         this.movieRepository = movieRepository;
         this.movieDescriptionsRepository = movieDescriptionsRepository;
-        this.movieCatalogueFacade = movieCatalogueFacade;
+        this.movieRentalService = movieRentalService;
     }
 
     public void rentMovie(String login, MovieId id) {
-        movieCatalogueFacade.rentMovie(login, id);
+        movieRentalService.rentMovie(login, id);
     }
 
     public void returnMovie(String login, MovieId id) {
-        movieCatalogueFacade.returnMovie(login, id);
+        movieRentalService.returnMovie(login, id);
     }
 
     public void addMovie(MovieAddRequest request) {
