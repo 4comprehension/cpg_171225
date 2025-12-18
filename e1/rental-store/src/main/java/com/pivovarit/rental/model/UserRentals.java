@@ -18,8 +18,8 @@ public final class UserRentals implements RentalAggregate {
     @Override
     public void apply(MovieRentalEvent event) {
         switch (event.type()) {
-            case MOVIE_RENTED -> currentRentals.add(event.movieId());
-            case MOVIE_RETURNED -> currentRentals.remove(event.movieId());
+            case MOVIE_RENTED -> currentRentals.add(new MovieId(event.movieId()));
+            case MOVIE_RETURNED -> currentRentals.remove(new MovieId(event.movieId()));
         }
     }
 

@@ -16,12 +16,12 @@ public class InMemoryRentalHistory {
 
     public void saveRentEvent(MovieId id, String login, long eventId) {
         events.add(new MovieRentalEvent(events.size() + 1, Instant.now()
-          .toString(), MovieRentalEventType.MOVIE_RENTED, id, login));
+          .toString(), MovieRentalEventType.MOVIE_RENTED, id.id(), login));
     }
 
     public void saveReturnEvent(MovieId id, String login, long eventId) {
         events.add(new MovieRentalEvent(events.size() + 1, Instant.now()
-          .toString(), MovieRentalEventType.MOVIE_RETURNED, id, login));
+          .toString(), MovieRentalEventType.MOVIE_RETURNED, id.id(), login));
     }
 
     public long lastEventId() {
@@ -37,7 +37,7 @@ public class InMemoryRentalHistory {
     }
 
     public List<MovieRentalEvent> findMovieRentals(MovieId movieId) {
-        return events.stream().filter(e -> e.movieId().equals(movieId)).toList();
+        return events.stream().filter(e -> e.movieId().equals(movieId.id())).toList();
     }
 
     public List<MovieRentalEvent> getUnprocessed() {
