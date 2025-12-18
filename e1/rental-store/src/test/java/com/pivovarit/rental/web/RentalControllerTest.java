@@ -13,6 +13,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasItem;
 import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
@@ -64,13 +65,16 @@ class RentalControllerTest {
     }
 
     @Test
-    void shouldGetMovies() throws Exception {
+    void shouldGetMoviesIndependentlyOfOrder() throws Exception {
         mockMvc.perform(get("/movies"))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$[*].title", containsInAnyOrder("Spiderman", "Tenet")))
-          .andExpect(jsonPath("$[*].id", containsInAnyOrder(1, 2)))
-          .andExpect(jsonPath("$[*].type", containsInAnyOrder("NEW", "REGULAR")));
+          .andExpect(jsonPath("$", Matchers.hasSize(2)))
+          .andExpect(jsonPath("$[?(@.title=='Spiderman')].id").value(hasItem(1)))
+          .andExpect(jsonPath("$[?(@.title=='Spiderman')].type").value(hasItem("NEW")))
+          .andExpect(jsonPath("$[?(@.title=='Tenet')].id").value(hasItem(2)))
+          .andExpect(jsonPath("$[?(@.title=='Tenet')].type").value(hasItem("REGULAR")));
     }
+
 
     @Test
     void shouldGetMoviesByType() throws Exception {
