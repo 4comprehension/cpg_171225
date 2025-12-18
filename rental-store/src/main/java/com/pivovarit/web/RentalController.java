@@ -1,4 +1,4 @@
-package com.pivovarit.domain.rental.web;
+package com.pivovarit.web;
 
 import com.pivovarit.domain.rental.api.MovieAddRequest;
 import com.pivovarit.domain.rental.api.MovieDto;

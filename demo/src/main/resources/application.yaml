@@ -1,9 +1,0 @@
-spring:
-  application.name: "hello world"
-  profiles.active: dev
-
-server:
-  port: ${APPLICATION_PORT:8080}
-
-application:
-  greeting: "hello world (externalized)"
