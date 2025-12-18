@@ -30,4 +30,8 @@ public class InMemoryMovieRepository {
     public Optional<Movie> findById(MovieId id) {
         return Optional.ofNullable(movies.get(id));
     }
+
+    public void clean() {
+        movies.clear();
+    }
 }
