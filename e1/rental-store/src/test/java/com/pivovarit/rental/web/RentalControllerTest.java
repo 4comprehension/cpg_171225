@@ -55,6 +55,15 @@ class RentalControllerTest {
     }
 
     @Test
+    void shouldRejectMovieWithNegativeId() throws Exception {
+        mockMvc.perform(post("/movies")
+            .contentType("application/json")
+            .content("""
+              {"id": -42,"title": "Foo","type": "NEW"}"""))
+          .andExpect(status().is(400));
+    }
+
+    @Test
     void shouldGetMovies() throws Exception {
         mockMvc.perform(get("/movies"))
           .andExpect(status().isOk())

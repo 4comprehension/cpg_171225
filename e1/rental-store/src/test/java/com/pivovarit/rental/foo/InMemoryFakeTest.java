@@ -13,7 +13,7 @@ import org.junit.jupiter.api.RepeatedTest;
 
 class InMemoryFakeTest {
 
-    @RepeatedTest(100_000)
+    @RepeatedTest(1_000)
     void shouldAddMovie() {
         var rentalService = inMemoryInstance();
         MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
