@@ -6,6 +6,7 @@ import com.pivovarit.rental.model.MovieId;
 import com.pivovarit.rental.model.MovieType;
 import com.pivovarit.rental.service.RentalService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -45,13 +46,7 @@ public class RentalController {
     }
 
     @PostMapping("/movies")
-    public void addMovie(@RequestBody MovieAddRequest movieDto) {
+    public void addMovie(@Validated @RequestBody MovieAddRequest movieDto) {
         rentalService.addMovie(movieDto);
     }
-
-    // RentalService
-    // GET /movies (zwracanie wszystkich filmów)
-    // GET /movies?type=NEW (filtracja po typie filmu)
-    // GET /movies/{id} (pobieranie filmu po ID)
-    // POST /movies (dodawanie nowego filmu)
 }

@@ -11,6 +11,5 @@ Content-Type: application/json
 
 {
   "id": 4,
-  "title": "Avengers",
-  "type": "NEW"
+  "title": "Avengers"
 }

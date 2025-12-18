@@ -2,16 +2,20 @@ package com.pivovarit.rental.web;
 
 import com.pivovarit.rental.model.MovieAddRequest;
 import com.pivovarit.rental.service.RentalService;
+import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.is;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -29,14 +33,52 @@ class RentalControllerTest {
     @BeforeEach
     void setUp() {
         rentalService.addMovie(new MovieAddRequest(1, "Spiderman", "NEW"));
+        rentalService.addMovie(new MovieAddRequest(2, "Tenet", "REGULAR"));
+    }
+
+    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
+    @Test
+    void shouldAddMovie() throws Exception {
+        mockMvc.perform(get("/movies/{id}", 42)).andExpect(status().is(404));
+
+        mockMvc.perform(post("/movies")
+            .contentType("application/json")
+            .content("""
+              {"id": 42,"title": "Foo","type": "NEW"}"""))
+          .andExpect(status().isOk());
+
+        mockMvc.perform(get("/movies/{id}", 42))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.title", is("Foo")))
+          .andExpect(jsonPath("$.id", is(42)))
+          .andExpect(jsonPath("$.type", is("NEW")));
     }
 
     @Test
     void shouldGetMovies() throws Exception {
         mockMvc.perform(get("/movies"))
           .andExpect(status().isOk())
-          .andExpect(jsonPath("$[0].title").value("Spiderman"))
-          .andExpect(jsonPath("$[0].id").value("1"))
-          .andExpect(jsonPath("$[0].type").value("NEW"));
+          .andExpect(jsonPath("$[*].title", containsInAnyOrder("Spiderman", "Tenet")))
+          .andExpect(jsonPath("$[*].id", containsInAnyOrder(1, 2)))
+          .andExpect(jsonPath("$[*].type", containsInAnyOrder("NEW", "REGULAR")));
+    }
+
+    @Test
+    void shouldGetMoviesByType() throws Exception {
+        mockMvc.perform(get("/movies").param("type", "NEW"))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$", Matchers.hasSize(1)))
+          .andExpect(jsonPath("$[0].title", is("Spiderman")))
+          .andExpect(jsonPath("$[0].id", is(1)))
+          .andExpect(jsonPath("$[0].type", is("NEW")));
+    }
+
+    @Test
+    void shouldGetMoviesById() throws Exception {
+        mockMvc.perform(get("/movies/{id}", 1))
+          .andExpect(status().isOk())
+          .andExpect(jsonPath("$.title", is("Spiderman")))
+          .andExpect(jsonPath("$.id", is(1)))
+          .andExpect(jsonPath("$.type", is("NEW")));
     }
 }
