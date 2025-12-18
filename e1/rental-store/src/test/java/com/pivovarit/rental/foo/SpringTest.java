@@ -1,10 +1,10 @@
 package com.pivovarit.rental.foo;
 
-import com.pivovarit.greeting.GreetingRepository;
-import com.pivovarit.rental.model.MovieAddRequest;
-import com.pivovarit.rental.model.MovieDto;
-import com.pivovarit.rental.model.MovieId;
-import com.pivovarit.rental.service.RentalService;
+import com.pivovarit.domain.greeting.GreetingRepository;
+import com.pivovarit.domain.rental.api.MovieAddRequest;
+import com.pivovarit.domain.rental.api.MovieDto;
+import com.pivovarit.domain.rental.api.MovieId;
+import com.pivovarit.domain.rental.RentalFacade;
 import org.junit.jupiter.api.RepeatedTest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -19,15 +19,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SpringTest {
 
     @Autowired
-    public RentalService rentalService;
+    public RentalFacade rentalFacade;
 
     //    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
     @RepeatedTest(100)
     void shouldAddMovie() throws Exception {
         MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
 
-        rentalService.addMovie(movieAddRequest);
-        assertThat(rentalService.findMovieById(new MovieId(42)))
+        rentalFacade.addMovie(movieAddRequest);
+        assertThat(rentalFacade.findMovieById(new MovieId(42)))
           .map(MovieDto::id)
           .contains(42L);
     }

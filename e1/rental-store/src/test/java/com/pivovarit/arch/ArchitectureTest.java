@@ -27,7 +27,7 @@ class ArchitectureTest {
 
     @ArchTest
     static final ArchRule shouldBeFreeOfCycles = slices()
-      .matching("com.pivovarit.(*)..")
+      .matching("com.pivovarit..(*)..")
       .should().beFreeOfCycles()
       .as("high-level packages should be free of cycles")
       .because("cycles are bad");
