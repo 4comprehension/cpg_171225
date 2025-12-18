@@ -1,0 +1,16 @@
+GET http://localhost:8080/movies?type=OLD
+
+###
+
+GET http://localhost:8080/movies/4
+
+###
+
+POST http://localhost:8080/movies
+Content-Type: application/json
+
+{
+  "id": 4,
+  "title": "Avengers",
+  "type": "NEW"
+}
