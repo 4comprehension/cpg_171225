@@ -37,7 +37,7 @@ class BlackboxTest {
       .dependsOn(postgres)
       .withNetwork(network)
       .withEnv("APPLICATION_PROFILE", "prod")
-      .withEnv("POSTGRES_URL", "jdbc:postgresql://postgres:5433/postgres")
+      .withEnv("POSTGRES_URL", "jdbc:postgresql://postgres:5432/postgres")
       .withEnv("POSTGRES_USER", "postgres")
       .withEnv("POSTGRES_PASSWORD", "password")
       .withExposedPorts(8080)

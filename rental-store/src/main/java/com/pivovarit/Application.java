@@ -19,7 +19,6 @@ public class Application {
 
         @Override
         public void run(ApplicationArguments args) {
-            // TODO
         }
     }
 }
