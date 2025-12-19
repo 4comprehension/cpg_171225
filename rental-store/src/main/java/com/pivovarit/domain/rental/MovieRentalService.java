@@ -19,7 +19,7 @@ class MovieRentalService {
     private final RentalHistory rentalHistoryRepository;
     private final MovieRepository movieRepository;
 
-    public MovieRentalService(RentalHistory rentalHistoryRepository, InMemoryMovieRepository movieRepository) {
+    public MovieRentalService(RentalHistory rentalHistoryRepository, MovieRepository movieRepository) {
         this.rentalHistoryRepository = rentalHistoryRepository;
         this.movieRepository = movieRepository;
     }

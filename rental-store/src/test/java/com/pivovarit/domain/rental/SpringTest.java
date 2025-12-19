@@ -1,11 +1,11 @@
-package com.pivovarit.rental.foo;
+package com.pivovarit.domain.rental;
 
 import com.pivovarit.domain.greeting.GreetingRepository;
 import com.pivovarit.domain.rental.api.MovieAddRequest;
 import com.pivovarit.domain.rental.api.MovieDto;
 import com.pivovarit.domain.rental.api.MovieId;
-import com.pivovarit.domain.rental.RentalFacade;
 import org.junit.jupiter.api.RepeatedTest;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -22,7 +22,7 @@ class SpringTest {
     public RentalFacade rentalFacade;
 
     //    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    @RepeatedTest(100)
+    @Test
     void shouldAddMovie() throws Exception {
         MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
 
@@ -38,6 +38,16 @@ class SpringTest {
         @Bean
         GreetingRepository greetingRepository() {
             return () -> "test";
+        }
+
+        @Bean
+        InMemoryMovieRepository movieRepository() {
+            return new InMemoryMovieRepository();
+        }
+
+        @Bean
+        InMemoryMovieDescriptionsRepository movieDescriptionsRepository() {
+            return new InMemoryMovieDescriptionsRepository();
         }
     }
 }

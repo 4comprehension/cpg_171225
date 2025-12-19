@@ -3,14 +3,15 @@ package com.pivovarit.domain.rental;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.jdbc.core.simple.JdbcClient;
 
 @Configuration
-@Profile("dev")
-class RentalDevConfiguration {
+@Profile("prod")
+class RentalProdConfiguration {
 
     @Bean
-    public InMemoryMovieRepository movieRepository() {
-        return new InMemoryMovieRepository();
+    public PostgresMovieRepository movieRepository(JdbcClient jdbcClient) {
+        return new PostgresMovieRepository(jdbcClient);
     }
 
     @Bean
