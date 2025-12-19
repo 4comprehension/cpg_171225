@@ -7,6 +7,9 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.stereotype.Component;
 
+// 1 dodajemy migrację z tabelą pod filmy
+// 2 dodajemy nowe implementacje *Repository operujące na JdbcClient
+// 3 porządkujemy profile tak, żeby postgres był wykorzystywany tylko na profilu 'prod' a na wszystkich innych startowały zaślepki InMemory*
 @SpringBootApplication
 @ConfigurationPropertiesScan
 public class Application {
