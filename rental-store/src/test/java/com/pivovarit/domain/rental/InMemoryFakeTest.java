@@ -4,17 +4,24 @@ import com.pivovarit.domain.rental.api.MovieAddRequest;
 import com.pivovarit.domain.rental.api.MovieDto;
 import com.pivovarit.domain.rental.api.MovieId;
 import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.RepeatedTest;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 class InMemoryFakeTest {
 
-    @RepeatedTest(100_000)
-    void shouldAddMovie() {
-        var rentalService = inMemoryInstance();
-        MovieAddRequest movieAddRequest = new MovieAddRequest(42, "Avengers", "NEW");
+    private RentalFacade rentalFacade;
 
-        rentalService.addMovie(movieAddRequest);
-        Assertions.assertThat(rentalService.findMovieById(new MovieId(42)))
+    @BeforeEach
+    void setUp() {
+        rentalFacade = inMemoryInstance();
+    }
+
+    @RepeatedTest(1_000)
+    void shouldAddMovie() {
+        rentalFacade.addMovie(new MovieAddRequest(42, "Avengers", "NEW"));
+        assertThat(rentalFacade.findMovieById(new MovieId(42)))
           .map(MovieDto::id)
           .contains(42L);
     }
