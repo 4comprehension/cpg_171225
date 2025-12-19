@@ -1,0 +1,12 @@
+package com.pivovarit.domain.rental.api;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
+
+public record MovieAddRequest(
+  @Positive long id,
+  @NotBlank @Size(max = 255, message = "title too long!") String title,
+  @NotNull(message = "type is obligatory!") String type) {
+}
