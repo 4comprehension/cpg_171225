@@ -8,7 +8,7 @@ public class AccountFacade {
     private final RentalFacade rentalFacade;
     private final WarehouseFacade warehouseService;
 
-    public AccountFacade(RentalFacade rentalFacade, WarehouseFacade warehouseService) {
+    AccountFacade(RentalFacade rentalFacade, WarehouseFacade warehouseService) {
         this.rentalFacade = rentalFacade;
         this.warehouseService = warehouseService;
     }

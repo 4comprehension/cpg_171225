@@ -18,7 +18,7 @@ public class RentalFacade {
     private final MovieDescriptionsRepository movieDescriptionsRepository;
     private final MovieRentalService movieRentalService;
 
-    public RentalFacade(MovieRepository movieRepository, InMemoryMovieDescriptionsRepository movieDescriptionsRepository, MovieRentalService movieRentalService) {
+    RentalFacade(MovieRepository movieRepository, InMemoryMovieDescriptionsRepository movieDescriptionsRepository, MovieRentalService movieRentalService) {
         this.movieRepository = movieRepository;
         this.movieDescriptionsRepository = movieDescriptionsRepository;
         this.movieRentalService = movieRentalService;
