@@ -1,4 +1,4 @@
-GET http://localhost:8080/movies?type=OLD
+GET http://localhost:8080/movies
 ###
 
 GET http://localhost:8080/movies/4

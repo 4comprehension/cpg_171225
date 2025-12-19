@@ -1,5 +1,6 @@
 package com.pivovarit.blackbox;
 
+import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
@@ -18,6 +19,8 @@ import static io.restassured.RestAssured.given;
 @Testcontainers
 class BlackboxTest {
 
+    private static final int WIREMOCK_PORT = 8080;
+
     private static final Logger log = LoggerFactory.getLogger(BlackboxTest.class);
 
     private static final Network network = Network.newNetwork();
@@ -33,8 +36,16 @@ class BlackboxTest {
       .waitingFor(Wait.forListeningPort());
 
     @Container
+    static WireMockContainer wiremock = new WireMockContainer()
+      .withNetwork(network)
+      .withNetworkAliases("wiremock")
+      .withExposedPorts(WIREMOCK_PORT)
+      .withLogConsumer(new Slf4jLogConsumer(log).withPrefix("wiremock"))
+      .waitingFor(Wait.forHttp("/__admin/health").forStatusCode(200));
+
+    @Container
     static ApplicationContainer app = new ApplicationContainer()
-      .dependsOn(postgres)
+      .dependsOn(postgres, wiremock)
       .withNetwork(network)
       .withEnv("APPLICATION_PROFILE", "prod")
       .withEnv("POSTGRES_URL", "jdbc:postgresql://postgres:5432/postgres")
@@ -86,7 +97,6 @@ class BlackboxTest {
           .statusCode(200);
     }
 
-
     @Test
     void shouldRejectMovieWithNegativeId() {
         given()
@@ -121,6 +131,16 @@ class BlackboxTest {
     private static class ApplicationContainer extends GenericContainer<ApplicationContainer> {
         ApplicationContainer() {
             super(DockerImageName.parse("rental-store:snapshot"));
+        }
+    }
+
+    private static class WireMockContainer extends GenericContainer<WireMockContainer> {
+        WireMockContainer() {
+            super(DockerImageName.parse("wiremock/wiremock:3x-alpine"));
+        }
+
+        public WireMock newClient() {
+            return new WireMock(getHost(), getMappedPort(WIREMOCK_PORT));
         }
     }
 }
