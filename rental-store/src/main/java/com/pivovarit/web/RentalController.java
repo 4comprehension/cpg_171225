@@ -4,11 +4,13 @@ import com.pivovarit.domain.rental.api.MovieAddRequest;
 import com.pivovarit.domain.rental.api.MovieDto;
 import com.pivovarit.domain.rental.api.MovieId;
 import com.pivovarit.domain.rental.RentalFacade;
+import com.pivovarit.domain.rental.MovieDescriptionsRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -20,9 +22,11 @@ import java.util.Optional;
 public class RentalController {
 
     private final RentalFacade rentalFacade;
+    private final MovieDescriptionsRepository movieDescriptionsRepository;
 
-    RentalController(RentalFacade rentalFacade) {
+    RentalController(RentalFacade rentalFacade, MovieDescriptionsRepository movieDescriptionsRepository) {
         this.rentalFacade = rentalFacade;
+        this.movieDescriptionsRepository = movieDescriptionsRepository;
     }
 
     @GetMapping("/movies")
@@ -48,4 +52,26 @@ public class RentalController {
     public void addMovie(@Validated @RequestBody MovieAddRequest movieDto) {
         rentalFacade.addMovie(movieDto);
     }
+
+    @PostMapping("/movies/{id}/description")
+    public ResponseEntity<Void> addDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
+        movieDescriptionsRepository.save(new MovieId(id), request.description());
+        return ResponseEntity.ok().build();
+    }
+
+    @PutMapping("/movies/{id}/description")
+    public ResponseEntity<Void> updateDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
+        movieDescriptionsRepository.update(new MovieId(id), request.description());
+        return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/movies/{id}/description")
+    public ResponseEntity<DescriptionResponse> getDescription(@PathVariable long id) {
+        return movieDescriptionsRepository.findByMovieId(new MovieId(id))
+            .map(md -> ResponseEntity.ok(new DescriptionResponse(id, md.description())))
+            .orElse(ResponseEntity.notFound().build());
+    }
+
+    record DescriptionRequest(String description) {}
+    record DescriptionResponse(long movieId, String description) {}
 }

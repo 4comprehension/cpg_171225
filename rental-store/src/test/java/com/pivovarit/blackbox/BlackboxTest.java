@@ -15,6 +15,7 @@ import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
 import static io.restassured.RestAssured.given;
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 
 @Testcontainers
 class BlackboxTest {
@@ -126,6 +127,75 @@ class BlackboxTest {
           .statusCode(400)
           .body("title", Matchers.equalTo("title too long!"))
           .body("$", Matchers.aMapWithSize(1));
+    }
+
+    @Test
+    void shouldAddAndRetrieveMovieDescription() {
+        // Create a movie first
+        given()
+          .port(app.getMappedPort(8080))
+          .when()
+          .contentType("application/json")
+          .body("""
+            {"id": 100, "title": "Test Movie", "type": "ACTION"}
+            """)
+          .post("/movies")
+          .then()
+          .statusCode(200);
+
+        // Setup WireMock stub for movie-descriptions service
+        wiremock.newClient().register(
+          get(urlPathEqualTo("/movie-descriptions/100"))
+            .willReturn(aResponse()
+              .withHeader("Content-Type", "application/json")
+              .withBody("""
+                {"movieId": 100, "description": "An amazing action movie"}
+                """)));
+
+        // Add description via rental-store
+        given()
+          .port(app.getMappedPort(8080))
+          .when()
+          .contentType("application/json")
+          .body("""
+            {"description": "An amazing action movie"}
+            """)
+          .post("/movies/100/description")
+          .then()
+          .statusCode(200);
+
+        // Retrieve movie description
+        given()
+          .port(app.getMappedPort(8080))
+          .when()
+          .get("/movies/100/description")
+          .then()
+          .statusCode(200)
+          .body("movieId", Matchers.equalTo(100))
+          .body("description", Matchers.equalTo("An amazing action movie"));
+    }
+
+    @Test
+    void shouldReturnNullDescriptionWhenNotSet() {
+        // Create a movie without description
+        given()
+          .port(app.getMappedPort(8080))
+          .when()
+          .contentType("application/json")
+          .body("""
+            {"id": 101, "title": "No Description Movie", "type": "DRAMA"}
+            """)
+          .post("/movies")
+          .then()
+          .statusCode(200);
+
+        // Attempt to retrieve description - should return 404
+        given()
+          .port(app.getMappedPort(8080))
+          .when()
+          .get("/movies/101/description")
+          .then()
+          .statusCode(404);
     }
 
     private static class ApplicationContainer extends GenericContainer<ApplicationContainer> {
