@@ -4,7 +4,7 @@ import com.pivovarit.domain.rental.api.MovieId;
 
 import java.util.Optional;
 
-interface MovieDescriptionsRepository {
+public interface MovieDescriptionsRepository {
     Optional<MovieDescription> findByMovieId(MovieId movieId);
 
     void save(MovieId movieId, String description);

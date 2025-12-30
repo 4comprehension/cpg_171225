@@ -1,3 +1,4 @@
+
 package com.pivovarit.domain.rental;
 
 import com.pivovarit.domain.rental.api.MovieId;
@@ -6,7 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 
-class InMemoryMovieDescriptionsRepository implements MovieDescriptionsRepository {
+public class InMemoryMovieDescriptionsRepository implements MovieDescriptionsRepository {
 
     private final Map<Long, String> storage = new ConcurrentHashMap<>();
 

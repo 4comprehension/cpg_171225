@@ -2,7 +2,7 @@ package com.pivovarit.moviedescriptions.client;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
-import org.springframework.web.client.RestTemplate;
+import org.springframework.web.client.RestClient;
 import org.springframework.web.client.HttpClientErrorException;
 
 import java.util.Optional;
@@ -10,17 +10,18 @@ import java.util.Optional;
 @Component
 public class RentalStoreClient {
 
-    private final RestTemplate restTemplate;
-    private final String rentalStoreUrl;
+    private final RestClient restClient;
 
-    public RentalStoreClient(RestTemplate restTemplate, @Value("${rentalstore.url}") String rentalStoreUrl) {
-        this.restTemplate = restTemplate;
-        this.rentalStoreUrl = rentalStoreUrl;
+    public RentalStoreClient(String baseUrl, RestClient.Builder restClientBuilder) {
+        this.restClient = restClientBuilder.baseUrl(baseUrl).build();
     }
 
     public boolean movieExists(long movieId) {
         try {
-            var response = restTemplate.getForObject(rentalStoreUrl + "/movies/{id}", MovieResponse.class, movieId);
+            var response = restClient.get()
+                .uri("/movies/{id}", movieId)
+                .retrieve()
+                .body(MovieResponse.class);
             return response != null;
         } catch (HttpClientErrorException.NotFound e) {
             return false;
@@ -29,7 +30,10 @@ public class RentalStoreClient {
 
     public Optional<String> fetchDescription(long movieId) {
         try {
-            var response = restTemplate.getForObject(rentalStoreUrl + "/movies/{id}", MovieResponse.class, movieId);
+            var response = restClient.get()
+                .uri("/movies/{id}", movieId)
+                .retrieve()
+                .body(MovieResponse.class);
             if (response != null && response.description() != null) {
                 return Optional.of(response.description());
             }

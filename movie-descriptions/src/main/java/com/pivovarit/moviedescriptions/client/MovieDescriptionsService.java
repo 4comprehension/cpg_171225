@@ -1,7 +1,7 @@
-package com.pivovarit.moviedescriptions.service;
+package com.pivovarit.moviedescriptions.client;
 
 import com.pivovarit.moviedescriptions.client.RentalStoreClient;
-import com.pivovarit.moviedescriptions.dto.MovieDescriptionDto;
+import com.pivovarit.moviedescriptions.client.MovieDescriptionDto;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;

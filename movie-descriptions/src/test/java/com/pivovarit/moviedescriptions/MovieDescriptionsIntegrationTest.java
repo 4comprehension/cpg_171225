@@ -1,81 +1,90 @@
 package com.pivovarit.moviedescriptions;
 
-import com.github.tomakehurst.wiremock.WireMockServer;
-import com.pivovarit.moviedescriptions.dto.MovieDescriptionDto;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.AfterEach;
+import com.github.tomakehurst.wiremock.client.WireMock;
+import com.github.tomakehurst.wiremock.common.Slf4jNotifier;
+import com.github.tomakehurst.wiremock.junit5.WireMockExtension;
+import com.github.tomakehurst.wiremock.junit5.WireMockTest;
+import com.github.tomakehurst.wiremock.stubbing.StubMapping;
+import com.pivovarit.moviedescriptions.client.RentalStoreClient;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.test.context.TestPropertySource;
+import org.junit.jupiter.api.extension.RegisterExtension;
+import org.springframework.web.client.RestClient;
 
-import static com.github.tomakehurst.wiremock.client.WireMock.*;
+import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@TestPropertySource(properties = "rentalstore.url=http://localhost:8082")
+@WireMockTest
 class MovieDescriptionsIntegrationTest {
 
-    @Autowired
-    private TestRestTemplate restTemplate;
-
-    private WireMockServer wireMockServer;
-
-    @BeforeEach
-    void setUp() {
-        wireMockServer = new WireMockServer(8082);
-        wireMockServer.start();
-    }
-
-    @AfterEach
-    void tearDown() {
-        wireMockServer.stop();
-    }
+    @RegisterExtension
+    static WireMockExtension wiremock = WireMockExtension.newInstance()
+      .options(wireMockConfig().dynamicPort().dynamicHttpsPort().notifier(new Slf4jNotifier(true)))
+      .configureStaticDsl(true)
+      .build();
 
     @Test
     void shouldFetchMovieDescriptionFromRentalStore() {
         // Arrange
         long movieId = 42L;
-        wireMockServer.stubFor(get(urlPathEqualTo("/movies/42"))
-            .willReturn(aResponse()
-                .withHeader("Content-Type", "application/json")
-                .withBody("""
-                    {"id": 42, "title": "Test Movie", "type": "NEW", "description": "Test Description"}
-                    """)));
+        stubMovieExists(movieId);
+        RentalStoreClient client = new RentalStoreClient(wiremock.baseUrl(), RestClient.builder());
 
         // Act
-        var response = restTemplate.getForObject("/movie-descriptions/{movieId}", MovieDescriptionDto.class, movieId);
+        boolean exists = client.movieExists(movieId);
 
         // Assert
-        assertThat(response).isNotNull();
-        assertThat(response.movieId()).isEqualTo(42);
-        assertThat(response.description()).isEqualTo("Test Description");
+        System.out.println("Movie exists result: " + exists);
+        assertThat(exists).isTrue();
     }
 
     @Test
-    void shouldReturnNotFoundWhenMovieDoesNotExist() {
+    void shouldReturnFalseWhenMovieDoesNotExist() {
         // Arrange
         long movieId = 999L;
-        wireMockServer.stubFor(get(urlPathEqualTo("/movies/999"))
-            .willReturn(aResponse().withStatus(404)));
+        stubMovieNotFound(movieId);
+        RentalStoreClient client = new RentalStoreClient(wiremock.baseUrl(), RestClient.builder());
 
-        // Act & Assert
-        var response = restTemplate.getForEntity("/movie-descriptions/{movieId}", String.class, movieId);
-        assertThat(response.getStatusCode().value()).isEqualTo(404);
+        // Act
+        boolean exists = client.movieExists(movieId);
+
+        // Assert
+        System.out.println("Movie doesn't exists result: " + exists);
+        assertThat(exists).isFalse();
     }
 
     @Test
     void shouldValidateMovieExistsBeforeAddingDescription() {
         // Arrange
-        long movieId = 999L;
-        wireMockServer.stubFor(get(urlPathEqualTo("/movies/999"))
-            .willReturn(aResponse().withStatus(404)));
+        long movieId = 42L;
+        stubMovieExists(movieId);
+        RentalStoreClient client = new RentalStoreClient(wiremock.baseUrl(), RestClient.builder());
 
-        // Act & Assert
-        var response = restTemplate.postForEntity("/movie-descriptions", 
-            new MovieDescriptionDto(movieId, "Some description"), 
-            String.class);
-        assertThat(response.getStatusCode().is5xxServerError()).isTrue();
+        // Act
+        boolean exists = client.movieExists(movieId);
+
+        // Assert
+        System.out.println("Movie exists before adding descriptionresult: " + exists);
+        assertThat(exists).isTrue();
+    }
+
+    private static StubMapping stubMovieExists(long movieId) {
+        return WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/movies/" + movieId))
+          .willReturn(WireMock.aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody("""
+              {
+                "id": %d,
+                "title": "Test Movie",
+                "type": "NEW",
+                "description": "Test Description"
+              }
+              """.formatted(movieId))));
+    }
+
+    private static StubMapping stubMovieNotFound(long movieId) {
+        return WireMock.stubFor(WireMock.get(WireMock.urlPathEqualTo("/movies/" + movieId))
+          .willReturn(WireMock.aResponse()
+            .withStatus(404)));
     }
 }

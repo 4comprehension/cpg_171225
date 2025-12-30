@@ -1,7 +1,7 @@
-package com.pivovarit.moviedescriptions.controller;
+package com.pivovarit.moviedescriptions.client;
 
-import com.pivovarit.moviedescriptions.dto.MovieDescriptionDto;
-import com.pivovarit.moviedescriptions.service.MovieDescriptionsService;
+import com.pivovarit.moviedescriptions.client.MovieDescriptionDto;
+import com.pivovarit.moviedescriptions.client.MovieDescriptionsService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

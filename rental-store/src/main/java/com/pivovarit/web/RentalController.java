@@ -54,24 +54,21 @@ public class RentalController {
     }
 
     @PostMapping("/movies/{id}/description")
-    public ResponseEntity<Void> addDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
+    public ResponseEntity<MovieDto> addDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
         movieDescriptionsRepository.save(new MovieId(id), request.description());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.of(rentalFacade.findMovieById(new MovieId(id)));
     }
 
     @PutMapping("/movies/{id}/description")
-    public ResponseEntity<Void> updateDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
+    public ResponseEntity<MovieDto> updateDescription(@PathVariable long id, @RequestBody DescriptionRequest request) {
         movieDescriptionsRepository.update(new MovieId(id), request.description());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.of(rentalFacade.findMovieById(new MovieId(id)));
     }
 
     @GetMapping("/movies/{id}/description")
-    public ResponseEntity<DescriptionResponse> getDescription(@PathVariable long id) {
-        return movieDescriptionsRepository.findByMovieId(new MovieId(id))
-            .map(md -> ResponseEntity.ok(new DescriptionResponse(id, md.description())))
-            .orElse(ResponseEntity.notFound().build());
+    public ResponseEntity<MovieDto> getDescription(@PathVariable long id) {
+        return ResponseEntity.of(rentalFacade.findMovieById(new MovieId(id)));
     }
 
     record DescriptionRequest(String description) {}
-    record DescriptionResponse(long movieId, String description) {}
 }
