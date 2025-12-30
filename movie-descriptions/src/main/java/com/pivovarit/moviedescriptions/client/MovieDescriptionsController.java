@@ -33,4 +33,10 @@ public class MovieDescriptionsController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+
+    @DeleteMapping("/{movieId}")
+    public ResponseEntity<Void> delete(@PathVariable long movieId) {
+        movieDescriptionsService.deleteDescription(movieId);
+        return ResponseEntity.noContent().build();
+    }
 }
