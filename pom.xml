@@ -11,7 +11,8 @@
     <modules>
         <module>rental-store</module>
         <module>rental-store-client</module>
-<!--        <module>rental-store-jpa-demo</module>-->
+        <module>movie-descriptions</module>
+        <!--        <module>rental-store-jpa-demo</module>-->
     </modules>
 
     <properties>
