@@ -8,17 +8,21 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping;
 import com.pivovarit.moviedescriptions.client.MovieDescriptionDto;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.RegisterExtension;
+import org.junit.jupiter.api.AfterEach;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+
 
 import static com.github.tomakehurst.wiremock.core.WireMockConfiguration.wireMockConfig;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @WireMockTest
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@ActiveProfiles("test")
 class MovieDescriptionsIntegrationTest {
 
     @RegisterExtension
@@ -34,6 +38,12 @@ class MovieDescriptionsIntegrationTest {
 
     @Autowired
     private TestRestTemplate restTemplate;
+
+    
+    @AfterEach
+    void resetWireMock() {
+        wiremock.resetAll();
+    }
 
     @Test
     void shouldStoreAndRetrieveDescriptionUsingH2() {
