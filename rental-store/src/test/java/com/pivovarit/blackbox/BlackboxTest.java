@@ -2,9 +2,12 @@ package com.pivovarit.blackbox;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.BeforeEach;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.test.context.ActiveProfiles;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.containers.output.Slf4jLogConsumer;
@@ -55,6 +58,28 @@ class BlackboxTest {
       .withExposedPorts(8080)
       .withLogConsumer(new Slf4jLogConsumer(log).withPrefix("rental-store"))
       .waitingFor(Wait.forHttp("/health").forStatusCode(200));
+
+      
+    @BeforeEach
+    void cleanDatabase() throws Exception {
+        try (var conn = java.sql.DriverManager.getConnection(
+                postgres.getJdbcUrl(), postgres.getUsername(), postgres.getPassword());
+            var stmt = conn.createStatement()) {
+            
+            stmt.execute("""
+                TRUNCATE TABLE
+                  hello,
+                  customers,
+                  products,
+                  orders,
+                  order_items,
+                  audit_log,
+                  movies,
+                  movie_descriptions
+                RESTART IDENTITY CASCADE
+            """);
+        }
+    }
 
     @Test
     void shouldCreateMovie() {
@@ -131,65 +156,59 @@ class BlackboxTest {
 
     @Test
     void shouldAddAndRetrieveMovieDescription() {
-        // Create a movie first
-        given()
-          .port(app.getMappedPort(8080))
-          .when()
-          .contentType("application/json")
-          .body("""
-            {"id": 100, "title": "Test Movie", "type": "ACTION"}
-            """)
-          .post("/movies")
-          .then()
-          .statusCode(200);
+      given()
+        .port(app.getMappedPort(8080))
+        .when()
+        .contentType("application/json")
+        .body("""
+        {"id": 100, "title": "Test Movie", "type": "REGULAR"}
+        """)
+        .post("/movies")
+        .then()
+        .statusCode(200);
 
-        // Setup WireMock stub for movie-descriptions service
-        wiremock.newClient().register(
-          get(urlPathEqualTo("/movie-descriptions/100"))
-            .willReturn(aResponse()
-              .withHeader("Content-Type", "application/json")
-              .withBody("""
-                {"movieId": 100, "description": "An amazing action movie"}
-                """)));
+      wiremock.newClient().register(
+        get(urlPathEqualTo("/movie-descriptions/100"))
+        .willReturn(aResponse()
+          .withHeader("Content-Type", "application/json")
+          .withBody("""
+          {"movieId": 100, "description": "An amazing action movie"}
+          """)));
 
-        // Add description via rental-store
-        given()
-          .port(app.getMappedPort(8080))
-          .when()
-          .contentType("application/json")
-          .body("""
-            {"description": "An amazing action movie"}
-            """)
-          .post("/movies/100/description")
-          .then()
-          .statusCode(200);
+      given()
+        .port(app.getMappedPort(8080))
+        .when()
+        .contentType("application/json")
+        .body("""
+        {"description": "An amazing action movie"}
+        """)
+        .post("/movies/100/description")
+        .then()
+        .statusCode(200);
 
-        // Retrieve movie description
-        given()
-          .port(app.getMappedPort(8080))
-          .when()
-          .get("/movies/100/description")
-          .then()
-          .statusCode(200)
-          .body("movieId", Matchers.equalTo(100))
-          .body("description", Matchers.equalTo("An amazing action movie"));
+      given()
+        .port(app.getMappedPort(8080))
+        .when()
+        .get("/movies/100/description")
+        .then()
+        .statusCode(200)
+        .body("movieId", Matchers.equalTo(100))
+        .body("description", Matchers.equalTo("An amazing action movie"));
     }
 
     @Test
     void shouldReturnNullDescriptionWhenNotSet() {
-        // Create a movie without description
         given()
           .port(app.getMappedPort(8080))
           .when()
           .contentType("application/json")
           .body("""
-            {"id": 101, "title": "No Description Movie", "type": "DRAMA"}
+            {"id": 101, "title": "No Description Movie", "type": "OLD"}
             """)
           .post("/movies")
           .then()
           .statusCode(200);
 
-        // Attempt to retrieve description - should return 404
         given()
           .port(app.getMappedPort(8080))
           .when()

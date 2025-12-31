@@ -66,8 +66,11 @@ public class RentalController {
     }
 
     @GetMapping("/movies/{id}/description")
-    public ResponseEntity<MovieDto> getDescription(@PathVariable long id) {
-        return ResponseEntity.of(rentalFacade.findMovieById(new MovieId(id)));
+    public ResponseEntity<com.pivovarit.domain.rental.api.MovieDescriptionDto> getDescription(@PathVariable long id) {
+        return movieDescriptionsRepository.findByMovieId(new MovieId(id))
+            .map(desc -> new com.pivovarit.domain.rental.api.MovieDescriptionDto(id, desc.description()))
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
     }
 
     record DescriptionRequest(String description) {}
