@@ -1,4 +1,4 @@
 package com.pivovarit.domain.rental;
 
-record MovieDescription(String description) {
+public record MovieDescription(String description) {
 }
