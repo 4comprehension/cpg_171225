@@ -20,4 +20,16 @@
         <maven.compiler.target>25</maven.compiler.target>
         <java.version>25</java.version>
     </properties>
+
+    <build>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.springframework.boot</groupId>
+                    <artifactId>spring-boot-maven-plugin</artifactId>
+                    <version>3.5.8</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 </project>
