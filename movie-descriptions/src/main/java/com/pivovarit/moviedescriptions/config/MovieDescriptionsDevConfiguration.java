@@ -1,12 +1,12 @@
 package com.pivovarit.moviedescriptions.config;
 
-import com.pivovarit.moviedescriptions.repository.InMemoryMovieDescriptionsRepository;
-import com.pivovarit.moviedescriptions.repository.JdbiH2MovieDescriptionsRepository;
+import javax.sql.DataSource;
+
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import javax.sql.DataSource;
+import com.pivovarit.moviedescriptions.repository.JdbiH2MovieDescriptionsRepository;
 
 @Configuration
 @Profile("dev")
