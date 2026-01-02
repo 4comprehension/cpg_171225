@@ -1,6 +1,6 @@
 package com.pivovarit.moviedescriptions;
 
-import com.pivovarit.moviedescriptions.repository.JdbiH2MovieDescriptionsRepository;
+import com.pivovarit.moviedescriptions.repository.JdbiMovieDescriptionsRepository;
 import org.hamcrest.Matchers;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,7 +23,7 @@ class MovieDescriptionIntegrationTest {
     int port;
 
     @Autowired
-    private JdbiH2MovieDescriptionsRepository movieRepository;
+    private JdbiMovieDescriptionsRepository movieRepository;
 
         @BeforeEach
         void setUp() {

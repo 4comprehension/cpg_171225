@@ -11,12 +11,12 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
 
-public class JdbiH2MovieDescriptionsRepository implements MovieDescriptionsRepository{
+public class JdbiMovieDescriptionsRepository implements MovieDescriptionsRepository{
 
 
     private final Jdbi jdbi;
 
-    public JdbiH2MovieDescriptionsRepository(DataSource dataSource) {
+    public JdbiMovieDescriptionsRepository(DataSource dataSource) {
         this.jdbi = Jdbi.create(dataSource);
     }
 
