@@ -48,6 +48,10 @@ public class JdbiH2MovieDescriptionsRepository implements MovieDescriptionsRepos
         return jdbi.withHandle(h -> h.createQuery("SELECT * FROM movie_descriptions").map((rs, _) -> asJdbiMovieDescription(rs)).list());
     }
 
+    public void clean() {
+        jdbi.withHandle(handle -> handle.execute("DELETE FROM movie_descriptions"));
+    }
+
 
     private static MovieDescription asJdbiMovieDescription(ResultSet rs) throws SQLException {
         return new MovieDescription(
