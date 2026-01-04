@@ -118,6 +118,12 @@
             <scope>test</scope>
         </dependency>
 
+        <dependency>
+            <groupId>com.pivovarit</groupId>
+            <artifactId>movie-descriptions</artifactId>
+            <version>0.0.1-SNAPSHOT</version>
+        </dependency>
+
     </dependencies>
 
     <build>
