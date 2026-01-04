@@ -19,7 +19,7 @@ class RentalConfiguration {
     @Bean
     public RentalFacade rentalService(
       MovieRepository movieRepository,
-      InMemoryMovieDescriptionsRepository movieDescriptionsRepository,
+      MovieDescriptionsRepository movieDescriptionsRepository,
       MovieRentalService movieRentalService) {
         return new RentalFacade(movieRepository, movieDescriptionsRepository, movieRentalService);
     }

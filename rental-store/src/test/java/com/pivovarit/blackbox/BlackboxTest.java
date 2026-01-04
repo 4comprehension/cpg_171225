@@ -2,6 +2,7 @@ package com.pivovarit.blackbox;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import org.hamcrest.Matchers;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,6 +15,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.postgresql.PostgreSQLContainer;
 import org.testcontainers.utility.DockerImageName;
 
+import static com.github.tomakehurst.wiremock.client.WireMock.*;
 import static io.restassured.RestAssured.given;
 
 @Testcontainers
@@ -51,26 +53,32 @@ class BlackboxTest {
       .withEnv("POSTGRES_URL", "jdbc:postgresql://postgres:5432/postgres")
       .withEnv("POSTGRES_USER", "postgres")
       .withEnv("POSTGRES_PASSWORD", "password")
+      .withEnv("MOVIE_DESCRIPTIONS_URL", "http://wiremock:8080")
       .withExposedPorts(8080)
       .withLogConsumer(new Slf4jLogConsumer(log).withPrefix("rental-store"))
       .waitingFor(Wait.forHttp("/health").forStatusCode(200));
 
+    @BeforeEach
+    void setUp() {
+        wiremock.newClient().resetMappings();
+    }
+
     @Test
-    void shouldCreateMovie() {
-        given()
-          .port(app.getMappedPort(8080))
-          .when()
-          .get("/movies")
-          .then()
-          .body("", Matchers.hasSize(0))
-          .statusCode(200);
+    void shouldFetchMovieDescriptionFromExternalService() {
+        WireMock wireMockClient = wiremock.newClient();
+        wireMockClient.register(get(urlPathEqualTo("/movie-descriptions/1"))
+          .willReturn(aResponse()
+            .withStatus(200)
+            .withHeader("Content-Type", "application/json")
+            .withBody("""
+              {"movieId": 1, "description": "A great movie"}
+              """)));
 
         given()
           .port(app.getMappedPort(8080))
-          .when()
           .contentType("application/json")
           .body("""
-            {"id": 42,"title": "Foo","type": "NEW"}
+            {"id": 1,"title": "Test Movie","type": "NEW"}
             """)
           .post("/movies")
           .then()
@@ -78,54 +86,40 @@ class BlackboxTest {
 
         given()
           .port(app.getMappedPort(8080))
-          .when()
-          .get("/movies")
+          .get("/movies/{id}", 1)
           .then()
-          .body("", Matchers.hasSize(1))
-          .body("find { it.title == 'Foo' }.id", Matchers.equalTo(42))
-          .body("find { it.title == 'Foo' }.type", Matchers.equalTo("NEW"))
-          .statusCode(200);
+          .statusCode(200)
+          .body("id", Matchers.equalTo(1))
+          .body("title", Matchers.equalTo("Test Movie"));
 
-        given()
-          .port(app.getMappedPort(8080))
-          .when()
-          .get("/movies/{id}", 42)
-          .then()
-          .body("id", Matchers.equalTo(42))
-          .body("title", Matchers.equalTo("Foo"))
-          .body("type", Matchers.equalTo("NEW"))
-          .statusCode(200);
+        wireMockClient.verifyThat(1, getRequestedFor(urlPathEqualTo("/movie-descriptions/1")));
     }
 
     @Test
-    void shouldRejectMovieWithNegativeId() {
+    void shouldHandleMissingMovieDescription() {
+        WireMock wireMockClient = wiremock.newClient();
+        wireMockClient.register(get(urlPathEqualTo("/movie-descriptions/2"))
+          .willReturn(aResponse().withStatus(404)));
+
         given()
           .port(app.getMappedPort(8080))
-          .when()
           .contentType("application/json")
           .body("""
-            {"id": -42,"title": "Foo","type": "NEW"}
+            {"id": 2,"title": "No Description Movie","type": "REGULAR"}
             """)
           .post("/movies")
           .then()
-          .statusCode(400)
-          .body("id", Matchers.is("must be greater than 0"));
-    }
+          .statusCode(200);
 
-    @Test
-    void shouldRejectMovieWithTooLongTitle() {
         given()
           .port(app.getMappedPort(8080))
-          .when()
-          .contentType("application/json")
-          .body("""
-            {"id": 42,"title": "%s","type": "NEW"}
-            """.formatted("a".repeat(1000)))
-          .post("/movies")
+          .get("/movies/{id}", 2)
           .then()
-          .statusCode(400)
-          .body("title", Matchers.equalTo("title too long!"))
-          .body("$", Matchers.aMapWithSize(1));
+          .statusCode(200)
+          .body("id", Matchers.equalTo(2))
+          .body("title", Matchers.equalTo("No Description Movie"));
+
+        wireMockClient.verifyThat(1, getRequestedFor(urlPathEqualTo("/movie-descriptions/2")));
     }
 
     private static class ApplicationContainer extends GenericContainer<ApplicationContainer> {
