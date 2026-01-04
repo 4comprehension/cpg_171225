@@ -22,6 +22,8 @@ public class RentalFacade {
         this.movieRepository = movieRepository;
         this.movieDescriptionsRepository = movieDescriptionsRepository;
         this.movieRentalService = movieRentalService;
+
+        log.info("TEST RentalFacade created. MovieDescriptionsRepository implementation: {}", movieDescriptionsRepository.getClass().getName());
     }
 
     public void rentMovie(String login, MovieId id) {
