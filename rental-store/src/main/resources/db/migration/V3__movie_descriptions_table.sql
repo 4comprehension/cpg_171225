@@ -1,0 +1,5 @@
+CREATE TABLE movie_descriptions (
+    id BIGINT GENERATED ALWAYS AS IDENTITY PRIMARY KEY,
+    description TEXT NOT NULL,
+    movie_id INT REFERENCES movies(id) ON DELETE CASCADE
+);

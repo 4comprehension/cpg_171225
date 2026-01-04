@@ -49,4 +49,34 @@ public class RentalStoreClient {
           .retrieve()
           .toBodilessEntity();
     }
+
+    public Optional<MovieDescription> findDescriptionByMovieId(long movieId) {
+        try {
+            MovieDescription description = restClient.get()
+              .uri("/movies/{movieId}/descriptions", movieId)
+              .retrieve()
+              .body(MovieDescription.class);
+            return Optional.ofNullable(description);
+        } catch (Exception e) {
+            return Optional.empty();
+        }
+    }
+
+    public void addMovieDescription(long movieId, MovieDescriptionRequest request) {
+        restClient.post()
+          .uri("/movies/{movieId}/descriptions", movieId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .toBodilessEntity();
+    }
+
+    public void updateMovieDescription(long movieId, MovieDescriptionRequest request) {
+        restClient.put()
+          .uri("/movies/{movieId}/descriptions", movieId)
+          .contentType(MediaType.APPLICATION_JSON)
+          .body(request)
+          .retrieve()
+          .toBodilessEntity();
+    }
 }

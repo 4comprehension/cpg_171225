@@ -1,8 +1,11 @@
 package com.pivovarit.domain.rental;
 
 import com.pivovarit.domain.rental.api.MovieAddRequest;
+import com.pivovarit.domain.rental.api.MovieDescriptionDto;
 import com.pivovarit.domain.rental.api.MovieDto;
 import com.pivovarit.domain.rental.api.MovieId;
+import com.pivovarit.domain.rental.exception.MovieDescriptionAlreadyExistsException;
+import com.pivovarit.domain.rental.exception.MovieDescriptionDoesNotExistException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,8 +51,28 @@ public class RentalFacade {
         return movieRepository.findById(id).map(toMovieWithDescription());
     }
 
+    public Optional<MovieDescriptionDto> findDescriptionByMovieId(MovieId id) {
+        return movieDescriptionsRepository.findByMovieId(id).map(md -> new MovieDescriptionDto(md.description()));
+    }
+
+    public MovieDescriptionDto addDescriptionByMovieId(MovieId id, String description) {
+        if (movieDescriptionsRepository.exists(id)) {
+            throw new MovieDescriptionAlreadyExistsException(id);
+        }
+
+        return new MovieDescriptionDto(movieDescriptionsRepository.save(id, description).description());
+    }
+
+    public MovieDescriptionDto updateDescriptionByMovieId(MovieId id, String description) {
+        if (!movieDescriptionsRepository.exists(id)) {
+            throw new MovieDescriptionDoesNotExistException(id);
+        }
+
+        return new MovieDescriptionDto(movieDescriptionsRepository.update(id, description).description());
+    }
+
     private Function<Movie, MovieDto> toMovieWithDescription() {
         return m -> MovieConverters.from(m, movieDescriptionsRepository.findByMovieId(m.getId())
-          .orElse(new MovieDescription("")).description());
+            .orElse(new MovieDescription("")).description());
     }
 }
