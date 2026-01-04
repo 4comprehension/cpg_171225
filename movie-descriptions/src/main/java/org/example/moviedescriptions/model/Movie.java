@@ -8,7 +8,6 @@ import jakarta.validation.constraints.Size;
 public class Movie {
     
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long movieId;
     
     @Size(max = 2000, message = "Description must not exceed 2000 characters")
