@@ -37,7 +37,7 @@ class MovieControllerTest {
     private ObjectMapper objectMapper;
 
     @Nested
-    @DisplayName("POST /movies - Add Movie")
+    @DisplayName("POST /movie-descriptions - Add Movie")
     class AddMovieTests {
 
         @Test
@@ -49,7 +49,7 @@ class MovieControllerTest {
             doNothing().when(movieService).addMovie(any(MovieDescriptionDto.class));
 
             // When & Then
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
@@ -65,7 +65,7 @@ class MovieControllerTest {
                     .when(movieService).addMovie(any(MovieDescriptionDto.class));
 
             // When & Then
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isBadRequest());
@@ -73,7 +73,7 @@ class MovieControllerTest {
     }
 
     @Nested
-    @DisplayName("GET /movies/{movieId} - Get Movie")
+    @DisplayName("GET /movie-descriptions/{movieId} - Get Movie")
     class GetMovieTests {
 
         @Test
@@ -85,7 +85,7 @@ class MovieControllerTest {
             when(movieService.getMovieDescription(1L)).thenReturn(Optional.of(response));
 
             // When & Then
-            mockMvc.perform(get("/movies/{movieId}", 1L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 1L))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.movieId", is(1)))
                     .andExpect(jsonPath("$.description", is("A thief who steals corporate secrets through dream-sharing technology.")));
@@ -98,13 +98,13 @@ class MovieControllerTest {
             when(movieService.getMovieDescription(999L)).thenReturn(Optional.empty());
 
             // When & Then
-            mockMvc.perform(get("/movies/{movieId}", 999L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 999L))
                     .andExpect(status().isNotFound());
         }
     }
 
     @Nested
-    @DisplayName("PUT /movies/{movieId} - Update Movie")
+    @DisplayName("PUT /movie-descriptions/{movieId} - Update Movie")
     class UpdateMovieTests {
 
         @Test
@@ -118,7 +118,7 @@ class MovieControllerTest {
                     .thenReturn(Optional.of(response));
 
             // When & Then
-            mockMvc.perform(put("/movies/{movieId}", 1L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 1L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isOk())
@@ -136,7 +136,7 @@ class MovieControllerTest {
                     .thenReturn(Optional.empty());
 
             // When & Then
-            mockMvc.perform(put("/movies/{movieId}", 999L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 999L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isNotFound());
@@ -154,7 +154,7 @@ class MovieControllerTest {
             String malformedJson = "{\"movieId\": 1, \"description\":}"; // Invalid JSON
 
             // When & Then
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(malformedJson))
                     .andExpect(status().isBadRequest());
@@ -167,7 +167,7 @@ class MovieControllerTest {
             MovieDescriptionDto request = new MovieDescriptionDto(1L, "Description");
 
             // When & Then
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isUnsupportedMediaType());
         }

@@ -53,13 +53,13 @@ class MovieApiIntegrationTest {
             // Create movie
             MovieDescriptionDto createRequest = new MovieDescriptionDto(1001L, "A computer hacker learns about reality.");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createRequest)))
                     .andExpect(status().isCreated());
 
             // Read movie
-            mockMvc.perform(get("/movies/{movieId}", 1001L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 1001L))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.movieId", is(1001)))
                     .andExpect(jsonPath("$.description", is("A computer hacker learns about reality.")));
@@ -67,7 +67,7 @@ class MovieApiIntegrationTest {
             // Update movie
             MovieDescriptionDto updateRequest = new MovieDescriptionDto(1001L, "Neo continues his quest.");
             
-            mockMvc.perform(put("/movies/{movieId}", 1001L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 1001L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isOk())
@@ -75,7 +75,7 @@ class MovieApiIntegrationTest {
                     .andExpect(jsonPath("$.description", is("Neo continues his quest.")));
 
             // Verify update persisted
-            mockMvc.perform(get("/movies/{movieId}", 1001L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 1001L))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.description", is("Neo continues his quest.")));
         }
@@ -86,7 +86,7 @@ class MovieApiIntegrationTest {
             // Create first movie
             MovieDescriptionDto createRequest = new MovieDescriptionDto(1002L, "Original description");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(createRequest)))
                     .andExpect(status().isCreated());
@@ -94,7 +94,7 @@ class MovieApiIntegrationTest {
             // Try to create duplicate
             MovieDescriptionDto duplicateRequest = new MovieDescriptionDto(1002L, "Duplicate description");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(duplicateRequest)))
                     .andExpect(status().isBadRequest());
@@ -109,12 +109,12 @@ class MovieApiIntegrationTest {
         @DisplayName("Should handle not found errors properly")
         void shouldHandleNotFoundErrors() throws Exception {
             // Try to get non-existent movie
-            mockMvc.perform(get("/movies/{movieId}", 999L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 999L))
                     .andExpect(status().isNotFound());
 
             // Try to update non-existent movie
             MovieDescriptionDto updateRequest = new MovieDescriptionDto(999L, "Description");
-            mockMvc.perform(put("/movies/{movieId}", 999L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 999L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(updateRequest)))
                     .andExpect(status().isNotFound());
@@ -125,7 +125,7 @@ class MovieApiIntegrationTest {
         void shouldHandleMalformedJson() throws Exception {
             String malformedJson = "{\"movieId\": 1, \"description\":}"; // Invalid JSON
 
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(malformedJson))
                     .andExpect(status().isBadRequest());
@@ -136,7 +136,7 @@ class MovieApiIntegrationTest {
         void shouldHandleMissingContentType() throws Exception {
             MovieDescriptionDto request = new MovieDescriptionDto(1L, "Description");
 
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isUnsupportedMediaType());
         }
@@ -152,7 +152,7 @@ class MovieApiIntegrationTest {
             // Create movie via API
             MovieDescriptionDto request = new MovieDescriptionDto(1003L, "Dreams within dreams.");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
@@ -173,12 +173,12 @@ class MovieApiIntegrationTest {
             MovieDescriptionDto update1 = new MovieDescriptionDto(1004L, "First update");
             MovieDescriptionDto update2 = new MovieDescriptionDto(1004L, "Second update");
 
-            mockMvc.perform(put("/movies/{movieId}", 1004L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 1004L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(update1)))
                     .andExpect(status().isOk());
 
-            mockMvc.perform(put("/movies/{movieId}", 1004L)
+            mockMvc.perform(put("/movie-descriptions/{movieId}", 1004L)
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(update2)))
                     .andExpect(status().isOk())
@@ -195,12 +195,12 @@ class MovieApiIntegrationTest {
         void shouldHandleNullDescription() throws Exception {
             MovieDescriptionDto request = new MovieDescriptionDto(1005L, null);
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
 
-            mockMvc.perform(get("/movies/{movieId}", 1005L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 1005L))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.movieId", is(1005)))
                     .andExpect(jsonPath("$.description").doesNotExist());
@@ -212,12 +212,12 @@ class MovieApiIntegrationTest {
             String longDescription = "A".repeat(2000); // Max allowed length
             MovieDescriptionDto request = new MovieDescriptionDto(1006L, longDescription);
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(request)))
                     .andExpect(status().isCreated());
 
-            mockMvc.perform(get("/movies/{movieId}", 1006L))
+            mockMvc.perform(get("/movie-descriptions/{movieId}", 1006L))
                     .andExpect(status().isOk())
                     .andExpect(jsonPath("$.description").value(longDescription));
         }
@@ -228,7 +228,7 @@ class MovieApiIntegrationTest {
             // Test with zero ID
             MovieDescriptionDto zeroIdRequest = new MovieDescriptionDto(0L, "Zero ID movie");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(zeroIdRequest)))
                     .andExpect(status().isCreated());
@@ -236,7 +236,7 @@ class MovieApiIntegrationTest {
             // Test with negative ID
             MovieDescriptionDto negativeIdRequest = new MovieDescriptionDto(-1L, "Negative ID movie");
             
-            mockMvc.perform(post("/movies")
+            mockMvc.perform(post("/movie-descriptions")
                             .contentType(MediaType.APPLICATION_JSON)
                             .content(objectMapper.writeValueAsString(negativeIdRequest)))
                     .andExpect(status().isCreated());

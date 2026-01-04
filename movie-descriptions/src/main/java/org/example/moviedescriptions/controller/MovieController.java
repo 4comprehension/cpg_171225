@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/movies")
+@RequestMapping("/movie-descriptions")
 public class MovieController {
     
     private final MovieService movieService;
