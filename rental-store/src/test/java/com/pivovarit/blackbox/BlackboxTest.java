@@ -18,6 +18,7 @@ import com.github.tomakehurst.wiremock.client.WireMock;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static com.github.tomakehurst.wiremock.client.WireMock.*;
@@ -35,14 +36,17 @@ class BlackboxTest {
     private static final Network network = Network.newNetwork();
 
     @Container
-    static final PostgreSQLContainer postgres = new PostgreSQLContainer("postgres:18")
-            .withNetwork(network)
-            .withNetworkAliases("postgres")
-            .withDatabaseName("postgres")
-            .withUsername("postgres")
-            .withPassword("password")
-            .withLogConsumer(new Slf4jLogConsumer(log).withPrefix("postgres"))
-            .waitingFor(Wait.forListeningPort());
+    static final PostgresTestContainer postgres = new PostgresTestContainer("postgres:18");
+
+    static {
+        postgres.withNetwork(network);
+        postgres.withNetworkAliases("postgres");
+        postgres.withDatabaseName("postgres");
+        postgres.withUsername("postgres");
+        postgres.withPassword("password");
+        postgres.withLogConsumer(new Slf4jLogConsumer(log).withPrefix("postgres"));
+        postgres.waitingFor(Wait.forListeningPort());
+    }
 
     @Container
     static WireMockContainer wiremock = new WireMockContainer()
@@ -70,29 +74,18 @@ class BlackboxTest {
 
     @BeforeEach
     void setupWireMockStubs() {
-
+        postgres.truncateAll();
         WireMock wireMock = wiremock.newClient();
         wireMock.register(get(urlPathMatching("/movie-descriptions/.*"))
                 .willReturn(aResponse()
                         .withHeader("Content-Type", "application/json")
                         .withBody("""
-                            {
-                                "id":"42",
-                                "description": "test description"}'
+                        {
+                            "id":"42",
+                            "description": "test description"
+                        }
                         """)
                         .withStatus(200)));
-    }
-
-    @BeforeEach
-    void resetDatabase() throws Exception {
-        try (Connection conn = DriverManager.getConnection(
-                postgres.getJdbcUrl(),
-                postgres.getUsername(),
-                postgres.getPassword())) {
-            try (Statement stmt = conn.createStatement()) {
-                stmt.execute("TRUNCATE TABLE movies CASCADE");
-            }
-        }
     }
 
     @Test
@@ -209,4 +202,26 @@ class BlackboxTest {
             return new WireMock(getHost(), getMappedPort(WIREMOCK_PORT));
         }
     }
+
+    private static class PostgresTestContainer extends PostgreSQLContainer{
+
+        public PostgresTestContainer(String dockerImageName) {
+            super(dockerImageName);
+        }
+
+        public void truncateAll() {
+            try (Connection conn = DriverManager.getConnection(
+                    getJdbcUrl(), getUsername(), getPassword());
+                 Statement stmt = conn.createStatement()) {
+
+                stmt.execute("""
+                TRUNCATE TABLE movies CASCADE
+            """);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
+
 }

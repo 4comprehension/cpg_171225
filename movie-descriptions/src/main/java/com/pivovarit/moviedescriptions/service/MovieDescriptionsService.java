@@ -5,11 +5,11 @@ import com.pivovarit.moviedescriptions.model.dto.request.CreateMovieDescriptionD
 import com.pivovarit.moviedescriptions.model.dto.response.MovieDescriptionDTO;
 import com.pivovarit.moviedescriptions.model.entity.MovieId;
 import com.pivovarit.moviedescriptions.repository.MovieDescriptionsRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.Collection;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 public class MovieDescriptionsService {
@@ -21,11 +21,11 @@ public class MovieDescriptionsService {
     }
 
     public MovieDescriptionDTO findMovieDescriptionById(MovieId movieId) {
-        return MovieDescriptionConverter.from(movieDescriptionsRepository.findByMovieId(movieId).orElseThrow(() -> new RuntimeException("Description not found")));
+        return MovieDescriptionConverter.from(movieDescriptionsRepository.findByMovieId(movieId).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Description not found")));
     }
 
     public Collection<MovieDescriptionDTO> findAllMovieDescriptions() {
-        return movieDescriptionsRepository.findAll().stream().map(MovieDescriptionConverter::from).collect(Collectors.toList());
+        return movieDescriptionsRepository.findAll().stream().map(MovieDescriptionConverter::from).toList();
     }
 
     public void addMovieDescription(CreateMovieDescriptionDTO movieDescriptionDTO) {

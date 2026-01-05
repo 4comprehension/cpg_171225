@@ -4,6 +4,7 @@ import com.pivovarit.domain.rental.api.MovieId;
 import org.springframework.web.client.RestClient;
 
 import java.util.Optional;
+import org.springframework.web.client.HttpClientErrorException;
 
 class IntegratedMovieDescriptionsRepository implements MovieDescriptionsRepository {
 
@@ -21,7 +22,7 @@ class IntegratedMovieDescriptionsRepository implements MovieDescriptionsReposito
                     .retrieve()
                     .body(MovieDescription.class);
             return Optional.ofNullable(movieDescription);
-        } catch (Exception e) {
+        } catch (HttpClientErrorException.NotFound e) {
             return Optional.empty();
         }
     }

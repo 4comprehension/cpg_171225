@@ -4,7 +4,6 @@ import com.pivovarit.moviedescriptions.model.dto.request.CreateMovieDescriptionD
 import com.pivovarit.moviedescriptions.model.dto.response.MovieDescriptionDTO;
 import com.pivovarit.moviedescriptions.service.MovieDescriptionsService;
 import com.pivovarit.moviedescriptions.model.entity.MovieId;
-import org.springframework.http.ResponseEntity;
 
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -21,13 +20,13 @@ public class MovieDescriptionsController {
     }
 
     @GetMapping("/movie-descriptions")
-    public ResponseEntity<Collection<MovieDescriptionDTO>> movieDescriptions() {
-        return ResponseEntity.ok(movieDescriptionService.findAllMovieDescriptions());
+    public Collection<MovieDescriptionDTO> movieDescriptions() {
+        return movieDescriptionService.findAllMovieDescriptions();
     }
 
     @GetMapping("/movie-descriptions/{id}")
-    public ResponseEntity<MovieDescriptionDTO> movieDescriptionById(@PathVariable long id) {
-        return ResponseEntity.ok(movieDescriptionService.findMovieDescriptionById(new MovieId(id)));
+    public MovieDescriptionDTO movieDescriptionById(@PathVariable long id) {
+        return movieDescriptionService.findMovieDescriptionById(new MovieId(id));
     }
 
     @PostMapping("/movie-descriptions")

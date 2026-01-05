@@ -9,8 +9,7 @@ import org.springframework.context.annotation.Profile;
 import com.pivovarit.moviedescriptions.repository.JdbiMovieDescriptionsRepository;
 
 @Configuration
-@Profile("dev")
-class MovieDescriptionsDevConfiguration {
+class MovieDescriptionsConfiguration {
 
     @Bean
     public JdbiMovieDescriptionsRepository jdbiMovieRepository(DataSource ds) {
